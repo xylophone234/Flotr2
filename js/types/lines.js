@@ -75,7 +75,7 @@ Flotr.addType('lines', {
     for (i = 0; i < length; ++i) {
 
       // To allow empty values
-      if (data[i][1] === null || data[i+1][1] === null) {
+      if (data[i][1] === null || data[i+1][1] === null) {// y value null
         if (options.fill) {
           if (i > 0 && data[i][1] !== null) {
             context.stroke();
@@ -116,12 +116,16 @@ Flotr.addType('lines', {
         y2 = yScale(data[i+1][1]);
       }
 
-      if (
-        (y1 > height && y2 > height) ||
-        (y1 < 0 && y2 < 0) ||
-        (x1 < 0 && x2 < 0) ||
-        (x1 > width && x2 > width)
-      ) continue;
+      // console.log(x1,y1,x2,y2);
+
+      // if (
+      //   (y1 > height && y2 > height) ||
+      //   (y1 < 0 && y2 < 0) ||
+      //   (x1 < 0 && x2 < 0) ||
+      //   (x1 > width && x2 > width)
+      // ) continue;
+
+      if (checkOutBox(x1,y1,width,height) && checkOutBox(x2,y2,width,height)) continue;
 
       if ((prevx != x1) || (prevy != y1 + shadowOffset)) {
         context.moveTo(x1, y1 + shadowOffset);
@@ -140,6 +144,10 @@ Flotr.addType('lines', {
     if (!options.fill || options.fill && !options.fillBorder) context.stroke();
 
     fill();
+
+    function checkOutBox(x,y,w,h){
+      return !(x>0 && y>0 && x<w && y<h);
+    }
 
     function fill () {
       // TODO stacked lines
