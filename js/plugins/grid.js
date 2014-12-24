@@ -53,6 +53,7 @@ Flotr.addPlugin('graphGrid', {
         if ((v <= a.min || v >= a.max) || 
             (v == a.min || v == a.max) && grid.outlineWidth)
           return;
+        // console.log(v);
         callback(Math.floor(a.d2p(v)) + ctx.lineWidth/2);
       });
     }
@@ -63,6 +64,35 @@ Flotr.addPlugin('graphGrid', {
     function drawHorizontalLines (y) {
       ctx.moveTo(0, y);
       ctx.lineTo(plotWidth, y);
+    }
+
+    function drawAxis(axes){
+      // console.log(options)
+      ctx.save();
+      ctx.beginPath();
+      ctx.lineWidth=options.xaxis.lineWidth;
+      ctx.strokeStyle=options.xaxis.lineColor;
+      var oy=axes.y.d2p(0);
+      if(oy<0) oy=0;
+      if(oy>plotHeight) oy=plotHeight;
+      ctx.moveTo(0,oy);
+      ctx.lineTo(plotWidth,oy);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.lineWidth=options.yaxis.lineWidth;
+      ctx.strokeStyle=options.yaxis.lineColor;
+      var ox=axes.x.d2p(0);
+      if(ox<0) ox=0;
+      if(ox>plotWidth) ox=plotWidth;
+      ctx.moveTo(ox,0);
+      ctx.lineTo(ox,plotHeight);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();      
     }
 
     if (grid.circular) {
@@ -106,10 +136,20 @@ Flotr.addPlugin('graphGrid', {
       a = this.axes.x;
       if (verticalLines)        drawGridLines(a.ticks, drawVerticalLines);
       if (minorVerticalLines)   drawGridLines(a.minorTicks, drawVerticalLines);
-      var ox=a.d2p(0+ctx.lineWidth/2);
+      
+
+      a = this.axes.y;
+      if (horizontalLines)      drawGridLines(a.ticks, drawHorizontalLines);
+      if (minorHorizontalLines) drawGridLines(a.minorTicks, drawHorizontalLines);
+
+
+      ctx.closePath();
+      ctx.stroke();
+      drawAxis(this.axes);
+      // var ox=this.axes.x.d2p(0);
       // if(ox<0) ox=0;
       // if(ox>plotWidth) ox=plotWidth;
-      // ctx.closePath();
+      
       // ctx.save();
       // ctx.beginPath();
       // ctx.strokeStyle='red';
@@ -118,16 +158,10 @@ Flotr.addPlugin('graphGrid', {
       // ctx.moveTo(ox,0);
       // ctx.lineTo(ox,plotHeight);
       // ctx.closePath();
+      // ctx.stroke();
       // ctx.restore();
-      // ctx.beginPath();
-
-      a = this.axes.y;
-      if (horizontalLines)      drawGridLines(a.ticks, drawHorizontalLines);
-      if (minorHorizontalLines) drawGridLines(a.minorTicks, drawHorizontalLines);
-
-
-
-      ctx.stroke();
+      // console.log(options)
+      
     }
     
     ctx.restore();
@@ -218,6 +252,9 @@ Flotr.addPlugin('graphGrid', {
 
       img.src = src;
     }
+  },
+
+  drawOutline1: function(){
   }
 });
 

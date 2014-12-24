@@ -20,10 +20,21 @@ Flotr.addPlugin('labels', {
       options  = this.options,
       ctx      = this.ctx,
       a        = this.axes,
-      
+      ox,
+      oy,offsety,offsetx,
+      plotWidth = this.plotWidth;
+      plotHeight = this.plotHeight;
       style    = { size: options.fontSize };
 
-      console.log(Flotr)
+      ox=a.x.d2p(0);
+      if(ox<0) ox=0;
+      if(ox>plotWidth) ox=plotWidth;
+      oy=a.y.d2p(0);
+      if(oy<0) oy=0;
+      if(oy>plotHeight) oy=plotHeight;
+      offsetx=ox;
+      offsety=oy-plotHeight;
+
 
     for (i = 0; i < a.x.ticks.length; ++i){
       if (a.x.ticks[i].label) { ++noLabels; }
@@ -199,6 +210,8 @@ Flotr.addPlugin('labels', {
               ((isFirst ? 1 : -1 ) * (graph.plotHeight + options.grid.labelMargin)) :
               axis.d2p(tick.v) - axis.maxLabel.height / 2);
           left = isX ? (offset.left + axis.d2p(tick.v) - xBoxWidth / 2) : 0;
+
+          isX? top+=offsety:left+=offsetx;//刻度跟随坐标轴
 
           name = '';
           if (i === 0) {

@@ -49,7 +49,7 @@ Flotr.addType('lines', {
     this.plot(options, 0, true);
 
     context.restore();
-    console.log(options.xScale);
+    // console.log(options.xScale);
   },
 
   plot : function (options, shadowOffset, incStack) {

@@ -38,7 +38,10 @@ Flotr.defaultOptions = {
     scaling: 'linear',     // => Scaling, can be 'linear' or 'logarithmic'
     base: Math.E,
     titleAlign: 'center',
-    margin: true           // => Turn off margins with false
+    margin: true,           // => Turn off margins with false
+
+    lineWidth:4,
+    lineColor:'rgba(0,0,0,0.4)'
   },
   x2axis: {},
   yaxis: {
@@ -61,7 +64,10 @@ Flotr.defaultOptions = {
     scaling: 'linear',     // => Scaling, can be 'linear' or 'logarithmic'
     base: Math.E,
     titleAlign: 'center',
-    margin: true           // => Turn off margins with false
+    margin: true ,          // => Turn off margins with false
+
+    lineWidth:4,
+    lineColor:'rgba(0,0,0,0.4)'
   },
   y2axis: {
     titleAngle: 270
@@ -80,6 +86,7 @@ Flotr.defaultOptions = {
     outlineWidth: 1,       // => width of the grid outline/border in pixels
     outline : 'nsew',      // => walls of the outline to display
     circular: false        // => if set to true, the grid will be circular, must be used when radars are drawn
+
   },
   mouse: {
     track: false,          // => true to track the mouse, no tracking otherwise
