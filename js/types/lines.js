@@ -49,6 +49,7 @@ Flotr.addType('lines', {
     this.plot(options, 0, true);
 
     context.restore();
+    // console.log(options.xScale);
   },
 
   plot : function (options, shadowOffset, incStack) {
@@ -69,6 +70,7 @@ Flotr.addType('lines', {
       x1, x2, y1, y2, stack1, stack2, i;
       
     if (length < 1) return;
+    // console.log(options)
 
     context.beginPath();
 
@@ -88,6 +90,8 @@ Flotr.addType('lines', {
         continue;
       }
 
+
+
       // Zero is infinity for log scales
       // TODO handle zero for logarithmic
       // if (xa.options.scaling === 'logarithmic' && (data[i][0] <= 0 || data[i+1][0] <= 0)) continue;
@@ -95,6 +99,9 @@ Flotr.addType('lines', {
       
       x1 = xScale(data[i][0]);
       x2 = xScale(data[i+1][0]);
+
+      if(x1<-1 || x1>width+1) continue;//不可见区域跳过
+      // console.log(x1);
 
       if (start === null) start = data[i];
       
