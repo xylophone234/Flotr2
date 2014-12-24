@@ -20,7 +20,10 @@ Flotr.addPlugin('labels', {
       options  = this.options,
       ctx      = this.ctx,
       a        = this.axes,
+      
       style    = { size: options.fontSize };
+
+      console.log(Flotr)
 
     for (i = 0; i < a.x.ticks.length; ++i){
       if (a.x.ticks[i].label) { ++noLabels; }

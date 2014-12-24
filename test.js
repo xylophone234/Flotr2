@@ -31,12 +31,13 @@ window.onload=function(){
     // Return a new graph.
     return Flotr.draw(
       container,
-      [d1,d2, d3 ],
+      [d1,d2,d3 ],
       o
     );
   }
 
-  graph = drawGraph();      
+  graph = drawGraph();  
+  // console.log(d3)    
 
   function initializeDrag (e) {
     start = graph.getEventPosition(e);

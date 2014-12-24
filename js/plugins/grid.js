@@ -106,10 +106,26 @@ Flotr.addPlugin('graphGrid', {
       a = this.axes.x;
       if (verticalLines)        drawGridLines(a.ticks, drawVerticalLines);
       if (minorVerticalLines)   drawGridLines(a.minorTicks, drawVerticalLines);
+      var ox=a.d2p(0+ctx.lineWidth/2);
+      // if(ox<0) ox=0;
+      // if(ox>plotWidth) ox=plotWidth;
+      // ctx.closePath();
+      // ctx.save();
+      // ctx.beginPath();
+      // ctx.strokeStyle='red';
+      // ctx.lineWidth=10;
+      // console.log(ox,plotHeight)
+      // ctx.moveTo(ox,0);
+      // ctx.lineTo(ox,plotHeight);
+      // ctx.closePath();
+      // ctx.restore();
+      // ctx.beginPath();
 
       a = this.axes.y;
       if (horizontalLines)      drawGridLines(a.ticks, drawHorizontalLines);
       if (minorHorizontalLines) drawGridLines(a.minorTicks, drawHorizontalLines);
+
+
 
       ctx.stroke();
     }
