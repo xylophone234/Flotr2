@@ -7,7 +7,8 @@ window.onload = function() {
       options,
       graph,
       start,
-      i;
+      i,
+      xidu=1;
     latexList=[];
     dataList=[];
 
@@ -41,6 +42,15 @@ window.onload = function() {
       return list;
     }
 
+    function reSample(){
+      var left=options.xaxis.min*2-options.xaxis.max;
+      var right=options.xaxis.max*2-options.xaxis.min;
+      var wid=(options.xaxis.max-options.xaxis.min)/container.offsetWidth*xidu;
+      for(var i=0;i<dataList.length;i++){
+        dataList[i]=sample(left,right,wid,latexList[i])
+      }
+    }
+
     graph = drawGraph();
     $('#show-hide').on('click',function(){
       $('#cbp-spmenu-s1').toggleClass('cbp-spmenu-open');
@@ -48,15 +58,19 @@ window.onload = function() {
 
     function edit(e){
       if(e.keyCode==13){
-        console.log($('#functin-list').find('div'))
+        console.log($('#functin-list').find('div'));
+        var left=options.xaxis.min*2-options.xaxis.max;
+        var right=options.xaxis.max*2-options.xaxis.min;
+        var wid=(options.xaxis.max-options.xaxis.min)/container.offsetWidth*xidu;
+        // console.log(left,right,wid)
         var index=$('#functin-list').find('div').index($(this).parents('div')[0]);
         var express=$(this).mathquill('latex');
         try{
           latexList[index]=Flotr.plugins.latex2js.latex2jsfun(express,'x');
-          dataList[index]=sample(-40,40,0.01,latexList[index]);
+          dataList[index]=sample(left,right,wid,latexList[index]);
           graph = drawGraph();
         }catch(e){
-
+          console.log(e)
         }
         
       }
@@ -84,27 +98,13 @@ window.onload = function() {
       dataList.push([]);
     })
 
-    $('.mathquill-editable').on('keyup',function(e){
-      if(e.keyCode==13){
-        var express=$('.mathquill-editable').mathquill('latex');
-        console.log(express)
-        var fn=Flotr.plugins.latex2js.latex2jsfun(express,'x');
-        // console.log(fn);
-        d3=sample(-40,40,0.01,fn);
-        // console.log(d3);
-        graph = drawGraph();
-      }
-      // console.log($('.mathquill-editable').mathquill().mathquill('latex'));
-      // var a=Flotr.plugins.latex2js.latex2jsfun(,'x');
-      // console.log(a);
-    })
     
-    // console.log(d3)    
 
     function initializeDrag(e) {
       start = graph.getEventPosition(e);
       Flotr.EventAdapter.observe(container, 'flotr:mousemove', move);
       Flotr.EventAdapter.observe(container, 'flotr:mouseup', stopDrag);
+      Flotr.EventAdapter.observe(container, 'flotr:click', scale);
     }
 
     function move(e, o) {
@@ -113,20 +113,42 @@ window.onload = function() {
         offset = start.x - o.x,
         yaxis = graph.axes.y,
         offsety = start.y - o.y;
-      graph = drawGraph({
-        xaxis: {
-          min: xaxis.min + offset,
-          max: xaxis.max + offset
-        },
-        yaxis: {
-          min: yaxis.min + offsety,
-          max: yaxis.max + offsety
+        opt={
+          xaxis: {
+            min: xaxis.min + offset,
+            max: xaxis.max + offset
+          },
+          yaxis: {
+            min: yaxis.min + offsety,
+            max: yaxis.max + offsety
+          }
         }
-      });
+        options.xaxis=opt.xaxis;
+        options.yaxis=opt.yaxis;
+      graph = drawGraph(opt);
     }
 
     function stopDrag() {
       Flotr.EventAdapter.stopObserving(container, 'flotr:mousemove', move);
+      reSample();
+    }
+
+    function scale(e){
+      console.log(e);
+      var ld=e.x-options.xaxis.min;
+      var rd=e.x-options.xaxis.max;
+      var td=e.y-options.yaxis.min;
+      var bd=e.y-options.yaxis.max;
+      ld*=0.5;
+      rd*=0.5;
+      td*=0.5;
+      bd*=0.5;
+      options.xaxis.min=e.x-ld;
+      options.xaxis.max=e.x-rd;
+      options.yaxis.min=e.y-td;
+      options.yaxis.max=e.y-bd;
+      reSample();
+      graph = drawGraph(options);
     }
 
     Flotr.EventAdapter.observe(container, 'flotr:mousedown', initializeDrag);
