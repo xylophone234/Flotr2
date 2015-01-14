@@ -1,12 +1,6 @@
 (function() {
 	Flotr.addPlugin('latex2js', {
-		callbacks: {
-			'flotr:beforedraw': function() {
-				// var a=this.latex2js.latex2jsfun('\sin ({2x+1} + 1)');
-				// var a=this.latex2js.latex2jsfun('\sqrt {{x^2} + 1}','x');
-				// console.log(a(0))
-			}
-		},
+		callbacks: {},
 		latex2js: function(expression, needjs) {
 			// Simple conversion of LaTeX formulas to Javascript math-expression with at most one variable (x).
 			// Functions that can be nested, should be replaced repeatedly from innermost to the outermost.
@@ -140,6 +134,7 @@
 			expression = '' + expression;
 			// Functions that can be nested, should be replaced repeatedly from innermost to the outermost.
 			var latexrep = [
+					[/\\text{([^{}]*)}/ig, '($1)'],
 					[/\\sqrt{([^{}]*)}/ig, '(sqrt($1))'],
 					[/\\lg\\left\(([^\(\)]+)\\right\)/g, '((log($1))/(log(10)))'],//log解析还有问题
 					[/\\frac{([^{}]*)}{([^{}]*)}/ig, '(($1)/($2))'],

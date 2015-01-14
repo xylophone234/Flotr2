@@ -4,6 +4,8 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 	<link rel="stylesheet" type="text/css" href="./lib/mathquill/mathquill.css">
+	<link rel="stylesheet" type="text/css" href="./lib/SlidePushMenus/css/default.css">
+	<link rel="stylesheet" type="text/css" href="./lib/SlidePushMenus/css/component.css">
 
 	<style type="text/css">
       body {
@@ -19,6 +21,7 @@
 
 	<script type="text/javascript" src="./lib/jquery/jquery.js"></script>
 	<script type="text/javascript" src="./lib/mathquill/mathquill.js"></script>
+	<script type="text/javascript" src="./lib/SlidePushMenus/js/modernizr.custom.js"></script>
 	<script type="text/javascript" src="./lib/bean.js"></script>
 	<script type="text/javascript" src="./lib/underscore.js"></script>
 	<script type="text/javascript" src="./js/Flotr.js"></script>
@@ -54,8 +57,16 @@
 	<!--<script type="text/javascript" src="flotr2.min.js"></script>-->
 
 </head>
-<body>
+<body class="cbp-spmenu-push">
 	<div class="mathquill-editable"></div>
+	<div id="show-hide">show/hide</div>
+	<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left cbp-spmenu-open" id="cbp-spmenu-s1">
+		<h3>函数</h3>
+		<div id="functin-list">
+		
+		</div>
+		<div class="add-new"><a href="#">添加</a></div>
+	</nav>
 	<div id="container" ></div>
 </body>
 	<script type="text/javascript" src="test.js"></script>

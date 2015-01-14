@@ -2,19 +2,14 @@ window.onload = function() {
   (function mouse_drag(container) {
 
     var
-      d1 = [],
-      d2 = [],
-      d3 = [],
+      latexList,
+      dataList,
       options,
       graph,
       start,
       i;
-
-    for (i = -40; i < 40; i += 0.01) {
-      d1.push([i, Math.sin(1 / i)]);
-      d2.push([i, 1 / i]);
-      d3.push([i, Math.tan(i)]);
-    }
+    latexList=[];
+    dataList=[];
 
     options = {
       xaxis: {
@@ -25,7 +20,7 @@ window.onload = function() {
         min: -5,
         max: 5
       },
-      title: 'Mouse Drag'
+      title: 'Math Graph For Function,Equation And Inequation'
     };
 
     // Draw graph with default options, overwriting with passed options
@@ -35,10 +30,7 @@ window.onload = function() {
       var o = Flotr._.extend(Flotr._.clone(options), opts || {});
 
       // Return a new graph.
-      return Flotr.draw(
-        container, [d1, d2, d3],
-        o
-      );
+      return Flotr.draw(container, dataList,o);
     }
 
     function sample(start,stop,step,fn){
@@ -50,6 +42,48 @@ window.onload = function() {
     }
 
     graph = drawGraph();
+    $('#show-hide').on('click',function(){
+      $('#cbp-spmenu-s1').toggleClass('cbp-spmenu-open');
+    })
+
+    function edit(e){
+      if(e.keyCode==13){
+        console.log($('#functin-list').find('div'))
+        var index=$('#functin-list').find('div').index($(this).parents('div')[0]);
+        var express=$(this).mathquill('latex');
+        try{
+          latexList[index]=Flotr.plugins.latex2js.latex2jsfun(express,'x');
+          dataList[index]=sample(-40,40,0.01,latexList[index]);
+          graph = drawGraph();
+        }catch(e){
+
+        }
+        
+      }
+    }
+
+    function remove(e){
+      var index=$('#functin-list').find('div').index($(this).parents('div .function-bar')[0]);
+      // console.log(index);
+      // console.log(dataList);
+      if(index<latexList.length) latexList.splice(index,1);
+      if(index<dataList.length) dataList.splice(index,1);
+      console.log($(this).parents('div .function-bar'))
+      $(this).parents('div .function-bar').detach();
+      // console.log(dataList);
+      graph = drawGraph();
+    }
+    
+    $('.add-new').on('click',function(){
+      var template='<div class="function-bar"><a href="#"><span class="function-delete">删除</span><span class="mathquill-editable"></span></a></div>';
+      var mq='<span class="mathquill-editable"></span>';
+      
+      $(template).appendTo('#functin-list').find('.mathquill-editable').mathquill('editable').on('keyup',edit).parents('div .function-bar').find('.function-delete').on('click',remove);
+      // $('#functin-list').find('.function-delete').on('click',remove)
+      latexList.push([]);
+      dataList.push([]);
+    })
+
     $('.mathquill-editable').on('keyup',function(e){
       if(e.keyCode==13){
         var express=$('.mathquill-editable').mathquill('latex');
