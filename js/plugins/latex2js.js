@@ -3,8 +3,8 @@
 		callbacks: {
 			'flotr:beforedraw': function() {
 				// var a=this.latex2js.latex2jsfun('\sin ({2x+1} + 1)');
-				var a=this.latex2js.latex2jsfun('\sqrt {{x^2} + 1}','x');
-				console.log(a(0))
+				// var a=this.latex2js.latex2jsfun('\sqrt {{x^2} + 1}','x');
+				// console.log(a(0))
 			}
 		},
 		latex2js: function(expression, needjs) {
@@ -140,11 +140,11 @@
 			expression = '' + expression;
 			// Functions that can be nested, should be replaced repeatedly from innermost to the outermost.
 			var latexrep = [
-					[/\\sqrt{([^{}]*)}/ig, 'sqrt($1)'],
+					[/\\sqrt{([^{}]*)}/ig, '(sqrt($1))'],
 					[/\\lg\\left\(([^\(\)]+)\\right\)/g, '((log($1))/(log(10)))'],//log解析还有问题
 					[/\\frac{([^{}]*)}{([^{}]*)}/ig, '(($1)/($2))'],
-					[/\\left\|([^\|]*)\\right\|/g, 'abs($1)'],
-					[/((?:[x])|(?:[0-9]+)|(?:\([^\(\)]\)))\^((?:[x])|(?:[0-9])|(?:{[0-9]+}))/ig, 'pow($1,$2)']
+					[/\\left\|([^\|]*)\\right\|/g, '(abs($1))'],
+					[/((?:[x])|(?:[0-9]+)|(?:\([^\(\)]\)))\^((?:[x])|(?:[0-9])|(?:{[^{}]+}))/ig, '(pow($1,$2))']
 				]
 				// Some LaTeX-markings need to be replaced only once.
 			var reponce = [
@@ -164,6 +164,12 @@
 				[/PI/ig,'(PI)'],
 				[/e/g,'(E)'],
 				[/\)\(/ig, ')*('], // Add times between ending and starting parenthesis )
+				[/\)sin/ig, ')*sin'], // Add times between ending and starting parenthesis )
+				[/\)cos/ig, ')*cos'], // Add times between ending and starting parenthesis )
+				[/\)tan/ig, ')*tan'], // Add times between ending and starting parenthesis )
+				[/\)log/ig, ')*log'], // Add times between ending and starting parenthesis )
+				
+				
 				[/\\cdot/ig, '*'], // Replace cdot with times
 				// [/([0-9]+)PI/ig, '$1*PI'],
 				// [/e/g, 'E'],

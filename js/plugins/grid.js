@@ -68,6 +68,7 @@ Flotr.addPlugin('graphGrid', {
 
     function drawAxis(axes){
       // console.log(options)
+      var arrow=8;
       ctx.save();
       ctx.beginPath();
       ctx.lineWidth=options.xaxis.lineWidth;
@@ -79,6 +80,15 @@ Flotr.addPlugin('graphGrid', {
       ctx.lineTo(plotWidth,oy);
       ctx.closePath();
       ctx.stroke();
+      // 画箭头
+      // ctx.beginPath();
+      // ctx.moveTo(plotWidth-arrow*2,oy+arrow);
+      // ctx.lineTo(plotWidth,oy);
+      // ctx.lineTo(plotWidth-arrow*2,oy-arrow);
+      // ctx.lineTo(plotWidth-arrow*1.5,oy);
+      // ctx.fillStyle=options.xaxis.lineColor;
+      // ctx.fill();
+
       ctx.restore();
 
       ctx.save();
