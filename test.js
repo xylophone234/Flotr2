@@ -8,19 +8,34 @@ window.onload = function() {
       graph,
       start,
       i,
-      xidu=1;
+      xidu=0.1;
     latexList=[];
     dataList=[];
 
     options = {
       xaxis: {
         min: -5,
-        max: 5
+        max: 5,
+        noTicks: 8
       },
       yaxis: {
         min: -5,
-        max: 5
+        max: 5,
+        noTicks: 8
       },
+      mouse : {
+        track           : true, // Enable mouse tracking
+        lineColor       : 'purple',
+        relative        : true,
+        position        : 'ne',
+        sensibility     : 1,
+        trackDecimals   : 2,
+        trackFormatter  : function (o) { return 'x = ' + o.x +', y = ' + o.y; }
+      },
+      crosshair : {
+        mode : 'xy'
+      },
+      shadowSize:0,
       title: 'Math Graph For Function,Equation And Inequation'
     };
 
@@ -104,7 +119,7 @@ window.onload = function() {
       start = graph.getEventPosition(e);
       Flotr.EventAdapter.observe(container, 'flotr:mousemove', move);
       Flotr.EventAdapter.observe(container, 'flotr:mouseup', stopDrag);
-      Flotr.EventAdapter.observe(container, 'flotr:click', scale);
+
     }
 
     function move(e, o) {
@@ -113,19 +128,11 @@ window.onload = function() {
         offset = start.x - o.x,
         yaxis = graph.axes.y,
         offsety = start.y - o.y;
-        opt={
-          xaxis: {
-            min: xaxis.min + offset,
-            max: xaxis.max + offset
-          },
-          yaxis: {
-            min: yaxis.min + offsety,
-            max: yaxis.max + offsety
-          }
-        }
-        options.xaxis=opt.xaxis;
-        options.yaxis=opt.yaxis;
-      graph = drawGraph(opt);
+        options.xaxis.min=xaxis.min + offset;
+        options.xaxis.max=xaxis.max + offset;
+        options.yaxis.min=yaxis.min + offsety;
+        options.yaxis.max=yaxis.max + offsety;
+        graph = drawGraph(options);
     }
 
     function stopDrag() {
@@ -134,15 +141,18 @@ window.onload = function() {
     }
 
     function scale(e){
-      console.log(e);
+      // console.log(e);
+      var times=(e.wheelDelta || e.detail)>0?0.5:2;
+      e.preventDefault ();
+      e=graph.getEventPosition(e);
       var ld=e.x-options.xaxis.min;
       var rd=e.x-options.xaxis.max;
       var td=e.y-options.yaxis.min;
       var bd=e.y-options.yaxis.max;
-      ld*=0.5;
-      rd*=0.5;
-      td*=0.5;
-      bd*=0.5;
+      ld*=times;
+      rd*=times;
+      td*=times;
+      bd*=times;
       options.xaxis.min=e.x-ld;
       options.xaxis.max=e.x-rd;
       options.yaxis.min=e.y-td;
@@ -152,6 +162,7 @@ window.onload = function() {
     }
 
     Flotr.EventAdapter.observe(container, 'flotr:mousedown', initializeDrag);
+    container.addEventListener('mousewheel',scale);
 
   })(document.getElementById("container"));
 }
