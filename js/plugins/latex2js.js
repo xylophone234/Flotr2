@@ -1,6 +1,7 @@
 (function() {
 	Flotr.addPlugin('latex2js', {
 		callbacks: {},
+		mathParams: {},
 		latex2js: function(expression, needjs) {
 			// Simple conversion of LaTeX formulas to Javascript math-expression with at most one variable (x).
 			// Functions that can be nested, should be replaced repeatedly from innermost to the outermost.
@@ -128,7 +129,15 @@
 				}
 			}
 		},
-		latex2jsfun: function(expression,val) {
+		/**
+		 * bugs
+		 * $\left(-3\right)^2$,
+		 * [latex2jsfun description]
+		 * @param  {[type]} expression [description]
+		 * @param  {[type]} val        [description]
+		 * @return {[type]}            [description]
+		 */
+		latex2jsfun2: function(expression,val) {
 			// Simple evaluator for math expressions. Converts LaTeX expression (without variables) to Javascript expression
 			// and tries to evaluate it to a number.
 			expression = '' + expression;
@@ -205,6 +214,145 @@
 			} else {
 				try {
 					return eval('(function(){return function (x){return '+expression+'}})()');
+				} catch (err) {
+					console.log(err)
+					throw 'Invalidexpression';
+				}
+			}
+		},
+		/**
+		 * [latex2jsfun description]
+		 * 1. remove math symbol
+		 * 2. only [a-zA-Z]
+		 * 3. num-->@num#
+		 * @param  {[type]} expression [description]
+		 * @param  {[type]} val        [description]
+		 * @return {[type]}            [description]
+		 */
+		latex2jsfun: function(expression,val) {
+			var mathSymbol=/sin|cos|tan|sqrt|lg|log|ln|frac|pi|e|text|left|right/ig;
+			var withOutSymbol=expression.split(mathSymbol);
+			var symbolList=[];
+			expression.replace(mathSymbol,function(s){
+				symbolList.push(s);
+				return s;
+			});
+			console.log('symbolList',symbolList,'withOutSymbol',withOutSymbol)
+
+			var tempString=withOutSymbol.join('');
+			var params=['a','b','c','d','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];// except e or E for Math.e
+			var opt={};
+			for(var i=0;i<params.length;i++){
+				if(tempString.indexOf(params[i])>=0){
+					this.mathParams[params[i]]=this.mathParams[params[i]] || 0;
+					opt[params[i]]=opt[params[i]] || 0;
+				}
+			}
+			console.log('opt',opt);
+			for(var key in opt){
+				for(i=0;i<withOutSymbol.length;i++){
+					withOutSymbol[i]=withOutSymbol[i].replace(key,'@'+key+'#');
+				}
+			}
+
+			function foldMerge(long,short){
+				var temp=[];
+				for(var i=0;i<short.length;i++){
+					temp.push(long[i],short[i]);
+				}
+				temp.push(long[long.length-1]);
+				console.log('temp',temp)
+				return temp;
+			}
+			expression=foldMerge(withOutSymbol,symbolList).join('');
+			expression=expression.replace(/(([0-9]+\.?[0-9]+)|([0-9]+))/g,'@$1#');//filter num
+			expression=expression.replace(/\\left\(/g,'@{');//
+			expression=expression.replace(/\\right\)/g,'}#');//
+			expression=expression.replace(/\#\@/g,'#*@');// add times '*'
+			console.log('267=========',expression);
+			// Simple evaluator for math expressions. Converts LaTeX expression (without variables) to Javascript expression
+			// and tries to evaluate it to a number.
+			expression = '' + expression;
+			// Functions that can be nested, should be replaced repeatedly from innermost to the outermost.
+			var latexrep = [
+					[/\\text{\@([^{}]*)}/ig, '($1)'],
+					[/\@{([^{}]+)}\#(?!\^)/g, '@($1)#'],
+					[/\@{?([^{}]+)}\#?\^{?\@([^{}]+)\#}?/g, '(pow($1,$2))'],
+
+					[/\\sqrt{([^{}]*)}/ig, '(sqrt($1))'],
+					[/\\lg{\@([[^{}]]+)\#}/g, '((log($1))/(log(10)))'],//log解析还有问题
+					[/\\frac{([^{}]*)}{([^{}]*)}/ig, '(($1)/($2))'],
+					[/\\left\|([^\|]*)\\right\|/g, '(abs($1))']
+				]
+				// Some LaTeX-markings need to be replaced only once.
+			var reponce = [
+				[/\\sin/ig, 'sin'], // Replace sin
+				[/\\cos/ig, 'cos'], // Replace cos
+				[/\\tan/ig, 'tan'], // Replace tan
+				[/\\ln/ig, 'log'], // Replace ln
+				[/\\pi/ig, 'PI'], // Replace PI
+				[/\\left\(/ig, '('], // Replace left parenthesis )
+				[/\\right\)/ig, ')'], // Replace right parenthesis
+				[/(sin|cos|tan)\(([^\^\)]+)\^{\\circ}/ig, '$1($2*PI/180'], // Replace degrees with radians inside sin, cos and tan 
+				[/{/ig, '('], // Replace left bracket
+				[/}/ig, ')'], // Replace right bracket
+				// [/,/ig, '.'], // Replace periods with points
+				
+				[/PI/ig,'(PI)'],
+				[/e/g,'(E)'],
+				[/\)\(/ig, ')*('], // Add times between ending and starting parenthesis )
+				[/\)sin/ig, ')*sin'], // Add times between ending and starting parenthesis )
+				[/\)cos/ig, ')*cos'], // Add times between ending and starting parenthesis )
+				[/\)tan/ig, ')*tan'], // Add times between ending and starting parenthesis )
+				[/\)log/ig, ')*log'], // Add times between ending and starting parenthesis )
+				
+				
+				[/\\cdot/ig, '*'], // Replace cdot with times
+				[/\@|\#/g, ''],
+				// [/e/g, 'E'],
+				// [/([0-9]+)E/g, '$1*E'],
+				// [/\)x/g, ')*x'],
+				[/EPI/g, 'E*PI'],
+				[/PI E/g, 'PI*E']
+			]
+
+			var oldexpr = '';
+			while (oldexpr !== expression) {
+				// Replace strings as long as the expression keeps changing.
+				oldexpr = expression;
+				for (var i = 0; i < latexrep.length; i++) {
+					expression = expression.replace(latexrep[i][0], latexrep[i][1]);
+					console.log(latexrep[i][0],'   ',expression)
+				}
+			}
+			for (var i = 0; i < reponce.length; i++) {
+				expression = expression.replace(reponce[i][0], reponce[i][1]);
+				console.log(reponce[i][0], ' ==  ',expression)
+			}
+			//expression = expression.replace('opt.x', 'x');
+			var reg = /(?:[a-z$_][a-z0-9$_]*)|(?:[;={}\[\]"'!&<>^\\?:])/ig,
+				valid = true;
+			console.log(expression)
+			expression = expression.replace(reg, function(word) {
+				console.log(word)
+				if(word=='x') return word
+				if (Math.hasOwnProperty(word)) {
+					return 'Math.' + word;
+				}else{
+					if(opt.hasOwnProperty(word)){
+						return 'opt.' + word;
+					}else{
+						valid = false;
+						return word;
+					}
+				} 
+			});
+			console.log(expression)
+			if (!valid) {
+				throw 'Invalidexpression';
+			} else {
+				try {
+					return eval('(function(){return function (opt,x){return '+expression+'}})()');
 				} catch (err) {
 					console.log(err)
 					throw 'Invalidexpression';

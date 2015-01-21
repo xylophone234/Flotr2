@@ -8,6 +8,7 @@ window.onload = function() {
       graph,
       start,
       i,
+      latex2js=Flotr.plugins.latex2js;
       xidu=0.1;
     latexList=[];
     dataList=[];
@@ -52,7 +53,7 @@ window.onload = function() {
     function sample(start,stop,step,fn){
       var list=[];
       for(var i=start;i<stop;i+=step){
-        list.push([i,fn(i)]);
+        list.push([i,fn(latex2js.mathParams,i)]);
       }
       return list;
     }
@@ -81,7 +82,8 @@ window.onload = function() {
         var index=$('#functin-list').find('div').index($(this).parents('div')[0]);
         var express=$(this).mathquill('latex');
         try{
-          latexList[index]=Flotr.plugins.latex2js.latex2jsfun(express,'x');
+          latexList[index]=latex2js.latex2jsfun(express,'x');
+          console.log(express)
           dataList[index]=sample(left,right,wid,latexList[index]);
           graph = drawGraph();
         }catch(e){
