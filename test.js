@@ -34,7 +34,9 @@ window.onload = function() {
         trackFormatter  : function (o) { return 'x = ' + o.x +', y = ' + o.y; }
       },
       crosshair : {
-        mode : 'xy'
+        mode : 'xy',
+        color : 'rgba(255,255,255,0)',
+        hideCursor : false
       },
       shadowSize:0,
       title: 'Math Graph For Function,Equation And Inequation'
@@ -159,11 +161,32 @@ window.onload = function() {
       options.xaxis.max=e.x-rd;
       options.yaxis.min=e.y-td;
       options.yaxis.max=e.y-bd;
+      // console.log(graph)
+      
+      try{
+        var dec=graph.axes.x.ticks[0].v.split('.')[1].length;
+      }catch(e){
+        dec=2;
+      }
+      options.mouse.trackDecimals=Math.max(2,dec);//调整显示精度
       reSample();
       graph = drawGraph(options);
     }
 
+    function addnewparam(name){
+      var template='<div class="params"><a href="#"><span param="'+name+'">'+name+'=0'+'</span><br/><input param="'+name+'" type="range" min="-10" max="10" step="0.1" value="0"/></a></div>';
+      $(template).appendTo('.math-params').find('input').on('change',function(){
+        var param=$(this).attr('param');
+        latex2js.mathParams[param]=parseFloat($(this).val());
+        $('.math-params').find('span[param="'+name+'"]').html(name+'='+$(this).val());
+        reSample();
+        graph = drawGraph(options);
+      })
+      
+    }
+
     Flotr.EventAdapter.observe(container, 'flotr:mousedown', initializeDrag);
+    Flotr.EventAdapter.observe(latex2js, 'flotr:addnewparam', addnewparam);
     container.addEventListener('mousewheel',scale);
 
   })(document.getElementById("container"));

@@ -12,6 +12,7 @@ Flotr.addPlugin('labels', {
 
   draw: function(){
     // Construct fixed width label boxes, which can be styled easily.
+    // console.log(this);
     var
       axis, tick, left, top, xBoxWidth,
       radius, sides, coeff, angle,
