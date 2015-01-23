@@ -17,6 +17,11 @@
         height: 800px;
         margin: 8px auto;
       }
+      #container2 {
+        width : 800px;
+        height: 800px;
+        margin: 8px auto;
+      }
     </style>
 
 	<script type="text/javascript" src="./lib/jquery/jquery.js"></script>
@@ -54,6 +59,7 @@
 	<script type="text/javascript" src="./js/plugins/spreadsheet.js"></script>
 	<script type="text/javascript" src="./js/plugins/titles.js"></script>
 	<script type="text/javascript" src="./js/plugins/latex2js.js"></script>
+	<script type="text/javascript" src="./js/plugins/graphcalc.js"></script>
 	<!--<script type="text/javascript" src="flotr2.min.js"></script>-->
 
 </head>
@@ -69,6 +75,16 @@
 		<div class="math-params"><a href="#">参数列表</a></div>
 	</nav>
 	<div id="container" ></div>
+	<div id="container2" ></div>
 </body>
-	<script type="text/javascript" src="test.js"></script>
+	<script type="text/javascript">
+		var a=new Flotr.plugins.graphcalc.graphcalc(document.getElementById("container"),['x^2+a','2x']);
+		var b=new Flotr.plugins.graphcalc.graphcalc(document.getElementById("container2"),['x^2+a','2x']);
+		console.log(a)
+		a.edit(2,'-x^2');
+		b.edit(2,'-x');
+		a.changeParam('a',2);
+		a.remove(1);
+	</script>
+	<!--<script type="text/javascript" src="test.js"></script>-->
 </html>
